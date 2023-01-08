@@ -2,12 +2,12 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
 import './signup_page.dart';
 import '../utilities/utilities.dart';
+import './post_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -39,22 +39,14 @@ class _LoginPageState extends State<LoginPage>
   void saveForm() async {
     if (_formKey.currentState!.validate()) {
       try {
+        Utilities.showGoodToast("Logging in...");
         await _auth.signInWithEmailAndPassword(
           email: _emailController.text,
           password: _passwordController.text,
         );
-        // Fluttertoast.showToast(
-        //     msg: "Login successfully.",
-        //     toastLength: Toast.LENGTH_SHORT,
-        //     gravity: ToastGravity.BOTTOM,
-        //     timeInSecForIosWeb: 1,
-        //     backgroundColor: Colors.green,
-        //     textColor: Colors.white,
-        //     fontSize: 16.0);
-        Utilities.showShimmer(Colors.teal, Colors.tealAccent, 'Loggin In...');
-
-        Future.delayed(Duration(seconds: 3))
-            .then((value) => Get.offAllNamed(SignupPage.pageName));
+        Utilities.showGoodToast("Logged in successfully.");
+        Future.delayed(const Duration(seconds: 3))
+            .then((value) => Get.offAllNamed(PostPage.pageName));
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
           print('No user found for that email.');
@@ -63,6 +55,9 @@ class _LoginPageState extends State<LoginPage>
           print('Wrong password provided for that user.');
           Utilities.showBadToast("Wrong password provided for that user.");
         }
+      } catch (error) {
+        // print(error);
+        Utilities.showBadToast(error.toString());
       }
     }
   }
@@ -73,6 +68,7 @@ class _LoginPageState extends State<LoginPage>
     _emailController.dispose();
     _passwordController.dispose();
     _formKey.currentState!.dispose();
+
     super.dispose();
   }
 
@@ -145,7 +141,6 @@ class _LoginPageState extends State<LoginPage>
                                 _animationController!.forward();
                                 saveForm();
                               }
-                              // Perform login
                             },
                             child: const Text('Log In'),
                           ),

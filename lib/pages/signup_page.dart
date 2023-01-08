@@ -50,7 +50,7 @@ class _SignupPageState extends State<SignupPage>
             backgroundColor: Colors.green,
             textColor: Colors.white,
             fontSize: 16.0);
-        Future.delayed(Duration(seconds: 2))
+        Future.delayed(const Duration(seconds: 2))
             .then((value) => Get.offAllNamed(LoginPage.pageName));
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {

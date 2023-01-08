@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
         ),
         GetPage(
           name: PostPage.pageName,
-          page: () => const PostPage(),
+          page: () => PostPage(),
         ),
       ],
     );

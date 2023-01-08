@@ -68,4 +68,29 @@ class Utilities {
       ),
     );
   }
+
+  static void showAlertDialog(
+      BuildContext context, String title, String message,
+      {String? buttonText, Function? onPressed}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: Text(buttonText ?? "OK"),
+              onPressed: () {
+                if (onPressed != null) {
+                  onPressed();
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
