@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
 import './login_page.dart';
+import './post_page.dart';
+import '../widgets/shimmer_button.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -27,6 +29,7 @@ class _SignupPageState extends State<SignupPage>
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FirebaseAuth _auth = FirebaseAuth.instance;
 
+  var isPressed = false;
   @override
   void initState() {
     super.initState();
@@ -51,7 +54,7 @@ class _SignupPageState extends State<SignupPage>
             textColor: Colors.white,
             fontSize: 16.0);
         Future.delayed(const Duration(seconds: 2))
-            .then((value) => Get.offAllNamed(LoginPage.pageName));
+            .then((value) => Get.offAllNamed(PostPage.pageName));
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           print('The password provided is too weak.');
@@ -74,18 +77,24 @@ class _SignupPageState extends State<SignupPage>
               textColor: Colors.white,
               fontSize: 16.0);
         }
+        setState(() {
+          isPressed = false;
+        });
       } catch (e) {
         print(e);
+        setState(() {
+          isPressed = false;
+        });
       }
     }
   }
 
   @override
   void dispose() {
-    _animationController!.dispose();
+    _animationController?.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _formKey.currentState!.dispose();
+    _formKey.currentState?.dispose();
     super.dispose();
   }
 
@@ -125,6 +134,7 @@ class _SignupPageState extends State<SignupPage>
                       const SizedBox(height: 20.0),
                       TextFormField(
                         controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
                           hintText: 'Email',
                         ),
@@ -141,29 +151,44 @@ class _SignupPageState extends State<SignupPage>
                       const SizedBox(height: 20.0),
                       TextFormField(
                         controller: _passwordController,
+                        keyboardType: TextInputType.visiblePassword,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          if (value.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        },
                         obscureText: true,
                         decoration: const InputDecoration(
                           hintText: 'Password',
                         ),
                       ),
                       const SizedBox(height: 20.0),
-                      FadeTransition(
-                        opacity: _animation as Animation<double>,
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                // Perform login
-                                _animationController!.forward();
-                                saveForm();
-                              }
-                              // Perform login
-                            },
-                            child: const Text('Sign up'),
-                          ),
-                        ),
-                      ),
+                      isPressed
+                          ? ShimmerButton(text: 'Sign up', onPressed: saveForm)
+                          : FadeTransition(
+                              opacity: _animation as Animation<double>,
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      // Perform login
+                                      setState(() {
+                                        isPressed = true;
+                                      });
+                                      _animationController!.forward();
+                                      saveForm();
+                                    }
+                                    // Perform login
+                                  },
+                                  child: const Text('Sign up'),
+                                ),
+                              ),
+                            ),
                       const SizedBox(height: 30.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

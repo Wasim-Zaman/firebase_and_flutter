@@ -8,14 +8,15 @@ import 'package:shimmer/shimmer.dart';
 import './signup_page.dart';
 import '../utilities/utilities.dart';
 import './post_page.dart';
+import '../services/auth_services.dart';
+import '../widgets/shimmer_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+  static const String pageName = '/login';
 
   @override
   _LoginPageState createState() => _LoginPageState();
-
-  static const String pageName = '/login';
 }
 
 class _LoginPageState extends State<LoginPage>
@@ -28,6 +29,8 @@ class _LoginPageState extends State<LoginPage>
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FirebaseAuth _auth = FirebaseAuth.instance;
 
+  var isPressed = false;
+
   @override
   void initState() {
     super.initState();
@@ -38,36 +41,58 @@ class _LoginPageState extends State<LoginPage>
 
   void saveForm() async {
     if (_formKey.currentState!.validate()) {
-      try {
-        Utilities.showGoodToast("Logging in...");
-        await _auth.signInWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
+      Utilities.showGoodToast("Logging in...");
+      AuthServices()
+          .login(_emailController.text, _passwordController.text)
+          .then((value) {
         Utilities.showGoodToast("Logged in successfully.");
-        Future.delayed(const Duration(seconds: 3))
+        Future.delayed(const Duration(seconds: 2))
             .then((value) => Get.offAllNamed(PostPage.pageName));
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'user-not-found') {
+      }).catchError((error) {
+        if (error.code == 'user-not-found') {
           print('No user found for that email.');
           Utilities.showBadToast("No user found for that email.");
-        } else if (e.code == 'wrong-password') {
+        } else if (error.code == 'wrong-password') {
           print('Wrong password provided for that user.');
           Utilities.showBadToast("Wrong password provided for that user.");
+        } else {
+          Utilities.showBadToast(error.toString());
         }
-      } catch (error) {
-        // print(error);
-        Utilities.showBadToast(error.toString());
-      }
+        setState(() {
+          isPressed = false;
+        });
+      });
+
+      // try {
+      //   Utilities.showGoodToast("Logging in...");
+      //   await _auth.signInWithEmailAndPassword(
+      //     email: _emailController.text,
+      //     password: _passwordController.text,
+      //   );
+      //   Utilities.showGoodToast("Logged in successfully.");
+      //   Future.delayed(const Duration(seconds: 3))
+      //       .then((value) => Get.offAllNamed(PostPage.pageName));
+      // } on FirebaseAuthException catch (e) {
+      //   if (e.code == 'user-not-found') {
+      //     print('No user found for that email.');
+      //     Utilities.showBadToast("No user found for that email.");
+      //   } else if (e.code == 'wrong-password') {
+      //     print('Wrong password provided for that user.');
+      //     Utilities.showBadToast("Wrong password provided for that user.");
+      //   }
+      // } catch (error) {
+      //   // print(error);
+      //   Utilities.showBadToast(error.toString());
+      // }
     }
   }
 
   @override
   void dispose() {
-    _animationController!.dispose();
+    _animationController?.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _formKey.currentState!.dispose();
+    _formKey.currentState?.dispose();
 
     super.dispose();
   }
@@ -108,6 +133,7 @@ class _LoginPageState extends State<LoginPage>
                       const SizedBox(height: 20.0),
                       TextFormField(
                         controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
                           hintText: 'Email',
                         ),
@@ -124,28 +150,45 @@ class _LoginPageState extends State<LoginPage>
                       const SizedBox(height: 20.0),
                       TextFormField(
                         controller: _passwordController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          if (value.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        },
                         obscureText: true,
                         decoration: const InputDecoration(
                           hintText: 'Password',
                         ),
                       ),
                       const SizedBox(height: 20.0),
-                      FadeTransition(
-                        opacity: _animation as Animation<double>,
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                // Perform login
-                                _animationController!.forward();
-                                saveForm();
-                              }
-                            },
-                            child: const Text('Log In'),
-                          ),
-                        ),
-                      ),
+                      isPressed
+                          ? ShimmerButton(
+                              text: 'Login',
+                              onPressed: saveForm,
+                            )
+                          : FadeTransition(
+                              opacity: _animation as Animation<double>,
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      // Perform login
+                                      setState(() {
+                                        isPressed = true;
+                                      });
+                                      _animationController!.forward();
+                                      saveForm();
+                                    }
+                                  },
+                                  child: const Text('Log In'),
+                                ),
+                              ),
+                            ),
                       const SizedBox(height: 30.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
