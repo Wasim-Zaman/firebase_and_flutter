@@ -45,6 +45,7 @@ dependencies:
   shimmer: ^2.0.0
   flutter_animated_button: ^2.0.2
   email_validator: ^2.1.17
+  firebase_database: ^10.0.9
 
 dev_dependencies:
   flutter_test:
