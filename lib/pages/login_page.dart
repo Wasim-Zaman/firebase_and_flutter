@@ -1,15 +1,17 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:get/get.dart';
 
+// import './login_with_phone_page.dart';
 import './signup_page.dart';
-import '../utilities/utilities.dart';
 import './post_page.dart';
+
+import '../common/widgets/custom_row_button.dart';
 import '../services/auth_services.dart';
 import '../widgets/shimmer_button.dart';
+import '../utilities/utilities.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -62,28 +64,6 @@ class _LoginPageState extends State<LoginPage>
           isPressed = false;
         });
       });
-
-      // try {
-      //   Utilities.showGoodToast("Logging in...");
-      //   await _auth.signInWithEmailAndPassword(
-      //     email: _emailController.text,
-      //     password: _passwordController.text,
-      //   );
-      //   Utilities.showGoodToast("Logged in successfully.");
-      //   Future.delayed(const Duration(seconds: 3))
-      //       .then((value) => Get.offAllNamed(PostPage.pageName));
-      // } on FirebaseAuthException catch (e) {
-      //   if (e.code == 'user-not-found') {
-      //     print('No user found for that email.');
-      //     Utilities.showBadToast("No user found for that email.");
-      //   } else if (e.code == 'wrong-password') {
-      //     print('Wrong password provided for that user.');
-      //     Utilities.showBadToast("Wrong password provided for that user.");
-      //   }
-      // } catch (error) {
-      //   // print(error);
-      //   Utilities.showBadToast(error.toString());
-      // }
     }
   }
 
@@ -99,14 +79,7 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Theme.of(context).scaffoldBackgroundColor,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
-    );
+    Utilities.getSystemUIOverlayStyle(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -190,19 +163,36 @@ class _LoginPageState extends State<LoginPage>
                               ),
                             ),
                       const SizedBox(height: 30.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Don\'t have an account?'),
-                          TextButton(
-                            onPressed: () {
-                              // Navigate to sign up page
-                              Get.offAndToNamed(SignupPage.pageName);
-                            },
-                            child: const Text('Sign Up'),
-                          ),
-                        ],
+                      CustomRowButton(
+                        text: 'Don\'t have an account?',
+                        onPressed: () {
+                          // Navigate to sign up page
+                          Get.offAndToNamed(SignupPage.pageName);
+                        },
+                        buttonText: 'Sign Up',
                       ),
+                      const SizedBox(height: 30),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     // Navigate to forgot password page
+                      //     Get.toNamed(LoginWithPhonePage.pageName);
+                      //   },
+                      //   child: Container(
+                      //     height: 50,
+                      //     width: double.infinity,
+                      //     decoration: BoxDecoration(
+                      //       // color: Colors.grey[200],
+                      //       borderRadius: BorderRadius.circular(10),
+                      //       border: Border.all(
+                      //         color: Colors.teal,
+                      //         width: 2,
+                      //       ),
+                      //     ),
+                      //     child: const Center(
+                      //       child: Text('Login using phone'),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

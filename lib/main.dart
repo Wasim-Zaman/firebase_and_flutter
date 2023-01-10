@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import './pages/login_with_phone_page.dart';
+import './utilities/utilities.dart';
 import './pages/signup_page.dart';
-import './pages/login_page.dart';
 import './pages/splash_page.dart';
-import 'pages/post_page.dart';
+import './pages/login_page.dart';
+import './pages/post_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,14 +21,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Theme.of(context).scaffoldBackgroundColor,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
-    );
+    Utilities.getSystemUIOverlayStyle(context);
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Firebase',
@@ -53,6 +48,10 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: PostPage.pageName,
           page: () => PostPage(),
+        ),
+        GetPage(
+          name: LoginWithPhonePage.pageName,
+          page: () => const LoginWithPhonePage(),
         ),
       ],
     );

@@ -9,6 +9,8 @@ import 'package:shimmer/shimmer.dart';
 import './login_page.dart';
 import './post_page.dart';
 import '../widgets/shimmer_button.dart';
+import '../common/widgets/custom_row_button.dart';
+import '../utilities/utilities.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -45,43 +47,20 @@ class _SignupPageState extends State<SignupPage>
           email: _emailController.text,
           password: _passwordController.text,
         );
-        Fluttertoast.showToast(
-            msg: "Account created successfully.",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        Utilities.showGoodToast("Account created successfully.");
         Future.delayed(const Duration(seconds: 2))
             .then((value) => Get.offAllNamed(PostPage.pageName));
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
-          print('The password provided is too weak.');
-          Fluttertoast.showToast(
-              msg: "The password provided is too weak.",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0);
+          Utilities.showBadToast('The password provided is too weak.');
         } else if (e.code == 'email-already-in-use') {
-          print('The account already exists for that email.');
-          Fluttertoast.showToast(
-              msg: "The account already exists for that email.",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0);
+          Utilities.showBadToast('The account already exists for that email.');
         }
         setState(() {
           isPressed = false;
         });
       } catch (e) {
-        print(e);
+        Utilities.showBadToast('Something went wrong.');
         setState(() {
           isPressed = false;
         });
@@ -100,14 +79,8 @@ class _SignupPageState extends State<SignupPage>
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Theme.of(context).scaffoldBackgroundColor,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
-    );
+    Utilities.getSystemUIOverlayStyle(context);
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -190,18 +163,12 @@ class _SignupPageState extends State<SignupPage>
                               ),
                             ),
                       const SizedBox(height: 30.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Don\'t have an account?'),
-                          TextButton(
-                            onPressed: () {
-                              // Navigate to log in page
-                              Get.offAndToNamed((LoginPage.pageName));
-                            },
-                            child: const Text('Log In'),
-                          ),
-                        ],
+                      CustomRowButton(
+                        text: 'Don\'t have an account',
+                        onPressed: () {
+                          Get.offAndToNamed(LoginPage.pageName);
+                        },
+                        buttonText: 'Log In',
                       ),
                     ],
                   ),
