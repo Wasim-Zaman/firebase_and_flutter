@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 
 // import './login_with_phone_page.dart';
 import './signup_page.dart';
-import './post_page.dart';
+import 'contents_page.dart';
 
 import '../common/widgets/custom_row_button.dart';
 import '../services/auth_services.dart';

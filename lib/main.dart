@@ -7,7 +7,7 @@ import './utilities/utilities.dart';
 import './pages/signup_page.dart';
 import './pages/splash_page.dart';
 import './pages/login_page.dart';
-import './pages/post_page.dart';
+import 'pages/contents_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

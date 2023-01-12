@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
 import './login_page.dart';
-import './post_page.dart';
+import 'contents_page.dart';
 import '../widgets/shimmer_button.dart';
 import '../common/widgets/custom_row_button.dart';
 import '../utilities/utilities.dart';

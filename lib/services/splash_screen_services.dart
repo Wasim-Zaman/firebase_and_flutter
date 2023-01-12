@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
-import '../pages/post_page.dart';
+import '../pages/contents_page.dart';
 import '../pages/login_page.dart';
 
 class SplashServices {
